@@ -67,6 +67,7 @@ STATIC_URL = "static/"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3333",
+    "https://myfastnotes.vercel.app",
 ]
 # or for testing quickly (unsafe for production):
 # CORS_ALLOW_ALL_ORIGINS = True
