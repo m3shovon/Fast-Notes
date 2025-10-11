@@ -1,17 +1,15 @@
 import "../styles.css";
 import { useEffect, useState } from "react";
-import Head from "next/head"; // Add this import
-
+import Head from "next/head";
 
 export default function App({ Component, pageProps }) {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark"); // Default theme = dark
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    if (saved) {
-      setTheme(saved);
-      document.documentElement.classList.toggle("dark", saved === "dark");
-    }
+    const initialTheme = saved || "dark"; // Default to dark if nothing saved
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme === "dark");
   }, []);
 
   function toggleTheme() {
@@ -29,12 +27,10 @@ export default function App({ Component, pageProps }) {
       </Head>
 
       <div className="min-h-screen">
+        {/* Optional Header */}
         {/* <header className="flex justify-between items-center p-4 border-b dark:border-gray-700">
           <h1 className="text-lg font-bold">Task Manager</h1>
-          <button
-            className="btn btn-secondary"
-            onClick={toggleTheme}
-          >
+          <button className="btn btn-secondary" onClick={toggleTheme}>
             {theme === "dark" ? "☀ Light" : "🌙 Dark"}
           </button>
         </header> */}

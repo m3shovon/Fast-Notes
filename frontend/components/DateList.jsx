@@ -9,7 +9,14 @@ function formatDateLabel(isoDate) {
   }
 }
 
-export default function DateList({ dates = [], selectedDate, onSelect, loading, compact }) {
+export default function DateList({
+  dates = [],
+  selectedDate,
+  onSelect,
+  loading,
+  compact,
+  vertical = false, // 🔹 New prop
+}) {
   if (loading) {
     return <div className="text-sm text-gray-500 dark:text-gray-400">Loading dates…</div>;
   }
@@ -23,7 +30,6 @@ export default function DateList({ dates = [], selectedDate, onSelect, loading, 
   }
 
   if (compact) {
-    // Small horizontally scrollable chips for topbar
     return (
       <div className="flex gap-2">
         {dates.map((d) => (
@@ -44,7 +50,29 @@ export default function DateList({ dates = [], selectedDate, onSelect, loading, 
     );
   }
 
-  // Full version fallback (vertical or horizontal depending on viewport)
+  // 🔹 Use vertical layout if forced, or fallback to responsive behavior
+  if (vertical) {
+    return (
+      <div className="space-y-2">
+        {dates.map((d) => (
+          <button
+            key={d.date}
+            onClick={() => onSelect(d.date)}
+            className={`w-full text-left p-3 rounded-lg flex justify-between items-center ${
+              selectedDate === d.date
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 dark:bg-gray-700"
+            }`}
+          >
+            <span>{formatDateLabel(d.date)}</span>
+            <span className="text-sm opacity-100">{d.count}</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  // Default responsive behavior
   return (
     <>
       <div className="flex gap-2 overflow-x-auto pb-2 md:hidden">
