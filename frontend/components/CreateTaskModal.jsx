@@ -1,4 +1,3 @@
-// frontend/components/CreateTaskModal.jsx
 import React, { useState } from "react";
 
 export default function CreateTaskModal({ onClose, onCreate, defaultDate }) {
@@ -6,6 +5,7 @@ export default function CreateTaskModal({ onClose, onCreate, defaultDate }) {
   const [task_date, setTaskDate] = useState(defaultDate || today);
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
+  const [is_daily, setIsDaily] = useState(false); 
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e) {
@@ -13,9 +13,10 @@ export default function CreateTaskModal({ onClose, onCreate, defaultDate }) {
     if (!title.trim()) return alert("Title required");
     setSubmitting(true);
     try {
-      await onCreate({ title, details, task_date });
+      await onCreate({ title, details, task_date, is_daily }); 
       setTitle("");
       setDetails("");
+      setIsDaily(false);
     } finally {
       setSubmitting(false);
     }
@@ -23,7 +24,6 @@ export default function CreateTaskModal({ onClose, onCreate, defaultDate }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/40">
-      {/* dialog: bottom-sheet on mobile, centered on md+ */}
       <div className="w-full md:max-w-md bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-xl p-4 md:shadow-lg">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold">Create Task</h3>
@@ -55,6 +55,14 @@ export default function CreateTaskModal({ onClose, onCreate, defaultDate }) {
             value={details}
             onChange={(e) => setDetails(e.target.value)}
           />
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={is_daily}
+              onChange={(e) => setIsDaily(e.target.checked)}
+            />
+            Task Tracking
+          </label>
 
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onClose} className="btn btn-secondary">

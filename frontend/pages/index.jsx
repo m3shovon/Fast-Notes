@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import DateList from "../components/DateList";
 import TaskList from "../components/TaskList";
 import CreateTaskModal from "../components/CreateTaskModal";
+import DailyTask from "../components/DailyTask";
 import { Plus, Filter } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "/api";
@@ -13,7 +14,8 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [loadingDates, setLoadingDates] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(false);
-  const [showFilter, setShowFilter] = useState(false); // For mobile sidebar
+  const [showFilter, setShowFilter] = useState(false); 
+  const [refreshDaily, setRefreshDaily] = useState(0);
 
   async function loadDates() {
     try {
@@ -59,10 +61,14 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       if (res.ok) {
+        // Reload both task lists after creation
         await loadDates();
+        await loadTasks(selectedDate); // refresh tasks for selected date
         setSelectedDate(payload.task_date);
         setShowModal(false);
+        setRefreshDaily((prev) => prev + 1);
       } else {
         alert("Failed to create task");
       }
@@ -106,21 +112,8 @@ export default function Home() {
     <div className="flex flex-col sm:flex-row max-w-6xl mx-auto px-4 py-6 gap-4">
       {/* Sidebar (Desktop) */}
       <aside className="hidden sm:block w-64 flex-shrink-0">
-        <div className="card p-3 sticky top-6">
-          <h2 className="text-lg font-semibold mb-2">Dates</h2>
-          <DateList
-            dates={dates}
-            selectedDate={selectedDate}
-            onSelect={(d) => setSelectedDate(d)}
-            loading={loadingDates}
-          />
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1">
         <header className="flex items-center justify-between mb-4">
-          {/* <h1 className="text-2xl font-bold">Task Manager</h1> */}
+          
           <div className="flex gap-2">
             {/* Mobile filter button */}
             <button
@@ -139,7 +132,21 @@ export default function Home() {
             </button>
           </div>
         </header>
+        <div className="card p-3 sticky top-6">
+          <h2 className="text-lg font-semibold mb-2">Dates</h2>
+          <DateList
+            dates={dates}
+            selectedDate={selectedDate}
+            onSelect={(d) => setSelectedDate(d)}
+            loading={loadingDates}
+          />
+        </div>
+      </aside>
 
+      {/* Main Content */}
+      <div className="flex-1">
+        
+        <header className="flex items-center justify-between mb-4">Task Manager</header>
         <main>
           <div className="card p-4">
             <h2 className="text-lg font-semibold mb-3">
@@ -155,15 +162,9 @@ export default function Home() {
           </div>
         </main>
       </div>
-
+      <DailyTask refreshKey={refreshDaily} />
       {/* Floating action button (mobile) */}
-      <button
-        className="fixed bottom-6 right-4 z-40 inline-flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-blue-600 text-white sm:hidden"
-        onClick={() => setShowModal(true)}
-        aria-label="Create task"
-      >
-        <Plus size={20} />
-      </button>
+
 
       {/* Mobile Filter Drawer */}
       {showFilter && (

@@ -38,3 +38,10 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.is_done = not task.is_done
         task.save()
         return Response(self.get_serializer(task).data)
+    
+    
+    @action(detail=False, methods=["get"])
+    def daily(self, request):  # ✅ new endpoint
+        qs = Task.objects.filter(is_daily=True).order_by("-created_at")
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
