@@ -14,7 +14,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [loadingDates, setLoadingDates] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(false);
-  const [showFilter, setShowFilter] = useState(false); 
+  const [showFilter, setShowFilter] = useState(false);
   const [refreshDaily, setRefreshDaily] = useState(0);
 
   async function loadDates() {
@@ -63,9 +63,8 @@ export default function Home() {
       });
 
       if (res.ok) {
-        // Reload both task lists after creation
         await loadDates();
-        await loadTasks(selectedDate); // refresh tasks for selected date
+        await loadTasks(selectedDate);
         setSelectedDate(payload.task_date);
         setShowModal(false);
         setRefreshDaily((prev) => prev + 1);
@@ -109,21 +108,18 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row max-w-6xl mx-auto px-4 py-6 gap-4">
-      {/* Sidebar (Desktop) */}
-      <aside className="hidden sm:block w-64 flex-shrink-0">
-        <header className="flex items-center justify-between mb-4">
-          
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-bold">🧭 Task Manager For M3S</h1>
           <div className="flex gap-2">
-            {/* Mobile filter button */}
             <button
               className="btn btn-secondary sm:hidden flex items-center gap-1"
               onClick={() => setShowFilter(true)}
             >
               <Filter size={16} /> Filter
             </button>
-
-            {/* Create Task */}
             <button
               className="btn btn-primary flex items-center gap-2"
               onClick={() => setShowModal(true)}
@@ -132,43 +128,48 @@ export default function Home() {
             </button>
           </div>
         </header>
-        <div className="card p-3 sticky top-6">
-          <h2 className="text-lg font-semibold mb-2">Dates</h2>
-          <DateList
-            dates={dates}
-            selectedDate={selectedDate}
-            onSelect={(d) => setSelectedDate(d)}
-            loading={loadingDates}
-          />
-        </div>
-      </aside>
 
-      {/* Main Content */}
-      <div className="flex-1">
-        
-        <header className="flex items-center justify-between mb-4">Task Manager</header>
-        <main>
-          <div className="card p-4">
-            <h2 className="text-lg font-semibold mb-3">
-              Tasks for {selectedDate || "—"}
-            </h2>
-
-            <TaskList
-              tasks={tasks}
-              onToggle={toggleTask}
-              onDelete={handleDeleteTask}
-              loading={loadingTasks}
-            />
+        {/* Main Layout: Two Column - DailyTask LEFT, DateList+TaskList RIGHT */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Column: Daily Tasks (bigger, flexible width) */}
+          <div className="flex-1 lg:min-w-[500px]">
+            <div className="lg:sticky lg:top-6">
+              <DailyTask refreshKey={refreshDaily} />
+            </div>
           </div>
-        </main>
+
+          {/* Right Column: DateList + TaskList (narrower) */}
+          <div className="w-full lg:w-96 flex-shrink-0 flex flex-col gap-4">
+            <div className="card p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                 Dates
+              </h2>
+              <DateList
+                dates={dates}
+                selectedDate={selectedDate}
+                onSelect={(d) => setSelectedDate(d)}
+                loading={loadingDates}
+              />
+            </div>
+
+            <div className="card p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+              <h2 className="text-lg font-semibold mb-3">
+                Tasks for {selectedDate || "—"}
+              </h2>
+              <TaskList
+                tasks={tasks}
+                onToggle={toggleTask}
+                onDelete={handleDeleteTask}
+                loading={loadingTasks}
+              />
+            </div>
+          </div>
+        </div>
       </div>
-      <DailyTask refreshKey={refreshDaily} />
-      {/* Floating action button (mobile) */}
 
-
-      {/* Mobile Filter Drawer */}
+      {/* 📱 Mobile Filter Drawer */}
       {showFilter && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-end sm:hidden">
+        <div className="fixed inset-0 z-50 bg-black/40 flex justify-end sm:hidden">
           <div className="w-3/4 max-w-xs bg-white dark:bg-gray-900 h-full p-4 shadow-lg">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-semibold">Filter by Date</h2>
@@ -182,12 +183,13 @@ export default function Home() {
                 setShowFilter(false);
               }}
               loading={loadingDates}
-              vertical 
+              vertical
             />
           </div>
         </div>
       )}
 
+      {/* ✨ Create Task Modal */}
       {showModal && (
         <CreateTaskModal
           onClose={() => setShowModal(false)}

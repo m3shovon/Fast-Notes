@@ -50,15 +50,15 @@ export default function TaskList({ tasks = [], onToggle, onDelete, loading }) {
               >
                 {t.title}
               </h3>
-              <div className="text-xs text-gray-400 dark:text-gray-500">
+              {/* <div className="text-xs text-gray-400 dark:text-gray-500">
                 {new Date(t.created_at).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
-              </div>
+              </div> */}
             </div>
 
-            {t.details && (
+            {/* {t.details && (
               <p
                 className={`text-sm ${
                   t.is_done
@@ -68,7 +68,7 @@ export default function TaskList({ tasks = [], onToggle, onDelete, loading }) {
               >
                 {truncateText(t.details, 20)}
               </p>
-            )}
+            )} */}
           </div>
 
           {/* 🎯 Right-side buttons */}
